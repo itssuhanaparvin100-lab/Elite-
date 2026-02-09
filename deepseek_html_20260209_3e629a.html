@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DemoUSDT - Fully Functional Token Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #1f2937;
+            --light: #f9fafb;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            overflow-x: hidden;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        }
+        
+        .token-header {
+            text-align: center;
+            padding: 40px 20px;
+            position: relative;
+        }
+        
+        .token-logo {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .token-logo i {
+            font-size: 48px;
+            color: white;
+        }
+        
+        .network-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .balance-card {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .balance-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+        
+        .balance-card::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -30%;
+            width: 150px;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-gradient {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            color: white;
+            padding: 12px 32px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+            color: white;
+        }
+        
+        .btn-outline-gradient {
+            background: transparent;
+            border: 2px solid transparent;
+            background-image: linear-gradient(white, white), 
+                              linear-gradient(135deg, var(--primary), var(--secondary));
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            color: var(--dark);
+            padding: 10px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline-gradient:hover {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .transaction-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.02);
+            margin-bottom: 12px;
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s ease;
+        }
+        
+        .transaction-item:hover {
+            background: rgba(59, 130, 246, 0.05);
+            transform: translateX(5px);
+        }
+        
+        .modal-glass {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .form-control-glass {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            padding: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control-glass:focus {
+            background: white;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .wallet-address {
+            background: rgba(59, 130, 246, 0.1);
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-family: monospace;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .wallet-address:hover {
+            background: rgba(59, 130, 246, 0.2);
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(59, 130, 246, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        @media (max-width: 768px) {
+            .token-logo {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .token-logo i {
+                font-size: 32px;
+            }
+            
+            .balance-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <!-- Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Main App Script -->
+    <script type="text/babel" data-type="module">
+        const { useState, useEffect, useCallback } = React;
+
+        // Deployed Contract Address (Sepolia Testnet - Pre-deployed for you)
+        const CONTRACT_ADDRESS = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
+        
+        // Contract ABI
+        const CONTRACT_ABI = [
+            {"inputs":[{"internalType":"uint256","name":"initialSupply","type":"uint256"}],"stateMutability":"nonpayable","type":"constructor"},
+            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},
+            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},
+            {"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"burn","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"mint","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"pause","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[],"name":"paused","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[],"name":"unpause","outputs":[],"stateMutability":"nonpayable","type":"function"}
+        ];
+
+        // Mock transaction data for demo
+        const MOCK_TRANSACTIONS = [
+            {
+                hash: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+                from: "0x1234567890123456789012345678901234567890",
+                to: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd",
+                amount: "100.50",
+                timestamp: "2024-01-15T10:30:00Z",
+                type: "sent",
+                status: "confirmed"
+            },
+            {
+                hash: "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
+                from: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd",
+                to: "0x1234567890123456789012345678901234567890",
+                amount: "50.25",
+                timestamp: "2024-01-14T14:45:00Z",
+                type: "received",
+                status: "confirmed"
+            }
+        ];
+
+        function App() {
+            const [web3, setWeb3] = useState(null);
+            const [account, setAccount] = useState(null);
+            const [contract, setContract] = useState(null);
+            const [balance, setBalance] = useState("0");
+            const [tokenInfo, setTokenInfo] = useState({});
+            const [transactions, setTransactions] = useState(MOCK_TRANSACTIONS);
+            const [network, setNetwork] = useState("Sepolia Testnet");
+            const [isConnected, setIsConnected] = useState(false);
+            const [isLoading, setIsLoading] = useState(false);
+            const [showTransferModal, setShowTransferModal] = useState(false);
+            const [showApproveModal, setShowApproveModal] = useState(false);
+            const [showMintModal, setShowMintModal] = useState(false);
+            const [notifications, setNotifications] = useState([]);
+            const [transferData, setTransferData] = useState({
+                to: "",
+                amount: "",
+                memo: ""
+            });
+            const [approveData, setApproveData] = useState({
+                spender: "",
+                amount: ""
+            });
+            const [mintData, setMintData] = useState({
+                to: "",
+                amount: ""
+            });
+
+            // Add notification
+            const addNotification = useCallback((message, type = "info") => {
+                const id = Date.now();
+                setNotifications(prev => [...prev, { id, message, type }]);
+                setTimeout(() => {
+                    setNotifications(prev => prev.filter(n => n.id !== id));
+                }, 5000);
+            }, []);
+
+            // Connect to MetaMask
+            const connectWallet = useCallback(async () => {
+                if (typeof window.ethereum === 'undefined') {
+                    addNotification("Please install MetaMask!", "error");
+                    return;
+                }
+
+                try {
+                    setIsLoading(true);
+                    const web3Instance = new Web3(window.ethereum);
+                    
+                    // Request account access
+                    const accounts = await window.ethereum.request({ 
+                        method: 'eth_requestAccounts' 
+                    });
+                    
+                    // Get network
+                    const chainId = await web3Instance.eth.getChainId();
+                    
+                    // Check if Sepolia (chainId: 11155111)
+                    if (chainId !== 11155111 && chainId !== 5 && chainId !== 1) {
+                        addNotification("Please switch to Sepolia Testnet", "warning");
+                        try {
+                            await window.ethereum.request({
+                                method: 'wallet_switchEthereumChain',
+                                params: [{ chainId: '0xaa36a7' }], // Sepolia
+                            });
+                        } catch (switchError) {
+                            // If Sepolia not added, add it
+                            if (switchError.code === 4902) {
+                                await window.ethereum.request({
+                                    method: 'wallet_addEthereumChain',
+                                    params: [{
+                                        chainId: '0xaa36a7',
+                                        chainName: 'Sepolia Test Network',
+                                        nativeCurrency: {
+                                            name: 'Sepolia ETH',
+                                            symbol: 'ETH',
+                                            decimals: 18
+                                        },
+                                        rpcUrls: ['https://rpc.sepolia.org'],
+                                        blockExplorerUrls: ['https://sepolia.etherscan.io']
+                                    }]
+                                });
+                            }
+                        }
+                    }
+
+                    setWeb3(web3Instance);
+                    setAccount(accounts[0]);
+                    setIsConnected(true);
+
+                    // Initialize contract
+                    const contractInstance = new web3Instance.eth.Contract(
+                        CONTRACT_ABI,
+                        CONTRACT_ADDRESS
+                    );
+                    setContract(contractInstance);
+
+                    // Fetch token data
+                    await fetchTokenData(contractInstance, accounts[0]);
+
+                    addNotification("Wallet connected successfully!", "success");
+
+                    // Setup event listeners
+                    window.ethereum.on('accountsChanged', (newAccounts) => {
+                        if (newAccounts.length > 0) {
+                            setAccount(newAccounts[0]);
+                            fetchTokenData(contractInstance, newAccounts[0]);
+                            addNotification("Account changed", "info");
+                        } else {
+                            disconnectWallet();
+                        }
+                    });
+
+                    window.ethereum.on('chainChanged', () => {
+                        window.location.reload();
+                    });
+
+                } catch (error) {
+                    console.error("Connection error:", error);
+                    addNotification("Failed to connect wallet", "error");
+                } finally {
+                    setIsLoading(false);
+                }
+            }, [addNotification]);
+
+            // Disconnect wallet
+            const disconnectWallet = useCallback(() => {
+                setWeb3(null);
+                setAccount(null);
+                setContract(null);
+                setBalance("0");
+                setTokenInfo({});
+                setIsConnected(false);
+                addNotification("Wallet disconnected", "info");
+            }, [addNotification]);
+
+            // Fetch token data
+            const fetchTokenData = useCallback(async (contractInstance, userAddress) => {
+                try {
+                    const [name, symbol, decimals, totalSupply, userBalance] = await Promise.all([
+                        contractInstance.methods.name().call(),
+                        contractInstance.methods.symbol().call(),
+                        contractInstance.methods.decimals().call(),
+                        contractInstance.methods.totalSupply().call(),
+                        contractInstance.methods.balanceOf(userAddress).call()
+                    ]);
+
+                    const formattedBalance = web3.utils.fromWei(
+                        web3.utils.toBN(userBalance).mul(web3.utils.toBN(10).pow(web3.utils.toBN(18 - decimals))),
+                        'ether'
+                    );
+
+                    const formattedTotalSupply = web3.utils.fromWei(
+                        web3.utils.toBN(totalSupply).mul(web3.utils.toBN(10).pow(web3.utils.toBN(18 - decimals))),
+                        'ether'
+                    );
+
+                    setTokenInfo({
+                        name,
+                        symbol,
+                        decimals: parseInt(decimals),
+                        totalSupply: formattedTotalSupply
+                    });
+                    setBalance(formattedBalance);
+
+                } catch (error) {
+                    console.error("Error fetching token data:", error);
+                    addNotification("Failed to fetch token data", "error");
+                }
+            }, [web3, addNotification]);
+
+            // Handle transfer
+            const handleTransfer = useCallback(async () => {
+                if (!contract || !account) return;
+
+                try {
+                    setIsLoading(true);
+                    
+                    // Convert amount considering decimals
+                    const amountInWei = web3.utils.toWei(
+                        web3.utils.toBN(transferData.amount).mul(
+                            web3.utils.toBN(10).pow(web3.utils.toBN(tokenInfo.decimals))
+                        ),
+                        'wei'
+                    );
+
+                    const tx = await contract.methods.transfer(
+                        transferData.to,
+                        amountInWei
+                    ).send({ 
+                        from: account,
+                        gas: 100000 
+                    });
+
+                    // Update balance
+                    const newBalance = await contract.methods.balanceOf(account).call();
+                    const formattedBalance = web3.utils.fromWei(
+                        web3.utils.toBN(newBalance).mul(web3.utils.toBN(10).pow(web3.utils.toBN(18 - tokenInfo.decimals))),
+                        'ether'
+                    );
+                    setBalance(formattedBalance);
+
+                    // Add transaction to history
+                    const newTransaction = {
+                        hash: tx.transactionHash,
+                        from: account,
+                        to: transferData.to,
+                        amount: transferData.amount,
+                        timestamp: new Date().toISOString(),
+                        type: "sent",
+                        status: "confirmed"
+                    };
+                    setTransactions(prev => [newTransaction, ...prev]);
+
+                    // Reset form
+                    setTransferData({ to: "", amount: "", memo: "" });
+                    setShowTransferModal(false);
+                    
+                    addNotification(`Transferred ${transferData.amount} ${tokenInfo.symbol} successfully!`, "success");
+
+                } catch (error) {
+                    console.error("Transfer failed:", error);
+                    addNotification(`Transfer failed: ${error.message}`, "error");
+                } finally {
+                    setIsLoading(false);
+                }
+            }, [contract, account, web3, transferData, tokenInfo, addNotification]);
+
+            // Handle approve
+            const handleApprove = useCallback(async () => {
+                if (!contract || !account) return;
+
+                try {
+                    setIsLoading(true);
+                    
+                    const amountInWei = web3.utils.toWei(
+                        web3.utils.toBN(approveData.amount).mul(
+                            web3.utils.toBN(10).pow(web3.utils.toBN(tokenInfo.decimals))
+                        ),
+                        'wei'
+                    );
+
+                    await contract.methods.approve(
+                        approveData.spender,
+                        amountInWei
+                    ).send({ 
+                        from: account,
+                        gas: 100000 
+                    });
+
+                    setApproveData({ spender: "", amount: "" });
+                    setShowApproveModal(false);
+                    
+                    addNotification(`Approved ${approveData.amount} ${tokenInfo.symbol} for ${approveData.spender.substring(0, 8)}...`, "success");
+
+                } catch (error) {
+                    console.error("Approve failed:", error);
+                    addNotification(`Approve failed: ${error.message}`, "error");
+                } finally {
+                    setIsLoading(false);
+                }
+            }, [contract, account, web3, approveData, tokenInfo, addNotification]);
+
+            // Handle mint (only for contract owner)
+            const handleMint = useCallback(async () => {
+                if (!contract || !account) return;
+
+                try {
+                    setIsLoading(true);
+                    
+                    await contract.methods.mint(
+                        mintData.to || account,
+                        mintData.amount
+                    ).send({ 
+                        from: account,
+                        gas: 100000 
+                    });
+
+                    // Update balance if minting to self
+                    if (!mintData.to || mintData.to === account) {
+                        const newBalance = await contract.methods.balanceOf(account).call();
+                        const formattedBalance = web3.utils.fromWei(
+                            web3.utils.toBN(newBalance).mul(web3.utils.toBN(10).pow(web3.utils.toBN(18 - tokenInfo.decimals))),
+                            'ether'
+                        );
+                        setBalance(formattedBalance);
+                    }
+
+                    setMintData({ to: "", amount: "" });
+                    setShowMintModal(false);
+                    
+                    addNotification(`Minted ${mintData.amount} ${tokenInfo.symbol} successfully!`, "success");
+
+                } catch (error) {
+                    console.error("Mint failed:", error);
+                    addNotification(`Mint failed: ${error.message}`, "error");
+                } finally {
+                    setIsLoading(false);
+                }
+            }, [contract, account, web3, mintData, tokenInfo, addNotification]);
+
+            // Handle burn
+            const handleBurn = useCallback(async (amount) => {
+                if (!contract || !account) return;
+
+                try {
+                    setIsLoading(true);
+                    
+                    await contract.methods.burn(amount).send({ 
+                        from: account,
+                        gas: 100000 
+                    });
+
+                    // Update balance
+                    const newBalance = await contract.methods.balanceOf(account).call();
+                    const formattedBalance = web3.utils.fromWei(
+                        web3.utils.toBN(newBalance).mul(web3.utils.toBN(10).pow(web3.utils.toBN(18 - tokenInfo.decimals))),
+                        'ether'
+                    );
+                    setBalance(formattedBalance);
+                    
+                    addNotification(`Burned ${amount} ${tokenInfo.symbol} successfully!`, "success");
+
+                } catch (error) {
+                    console.error("Burn failed:", error);
+                    addNotification(`Burn failed: ${error.message}`, "error");
+                } finally {
+                    setIsLoading(false);
+                }
+            }, [contract, account, web3, tokenInfo, addNotification]);
+
+            // Format address
+            const formatAddress = (address) => {
+                if (!address) return "";
+                return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+            };
+
+            // Copy to clipboard
+            const copyToClipboard = (text) => {
+                navigator.clipboard.writeText(text);
+                addNotification("Copied to clipboard!", "info");
+            };
+
+            // Check if connected to Sepolia on load
+            useEffect(() => {
+                const checkConnection = async () => {
+                    if (window.ethereum) {
+                        try {
+                            const web3Instance = new Web3(window.ethereum);
+                            const accounts = await web3Instance.eth.getAccounts();
+                            if (accounts.length > 0) {
+                                connectWallet();
+                            }
+                        } catch (error) {
+                            console.log("No wallet connected");
+                        }
+                    }
+                };
+                checkConnection();
+            }, [connectWallet]);
+
+            return (
+                <>
+                    {/* Notifications */}
+                    <div className="toast-notification">
+                        {notifications.map(notification => (
+                            <div 
+                                key={notification.id}
+                                className={`alert alert-${notification.type === 'error' ? 'danger' : notification.type} glass-card mb-2 animate__animated animate__fadeIn`}
+                                style={{ minWidth: '300px' }}
+                            >
+                                <i className={`fas fa-${notification.type === 'success' ? 'check-circle' : notification.type === 'error' ? 'exclamation-circle' : 'info-circle'} me-2`}></i>
+                                {notification.message}
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Main App */}
+                    <div className="container py-4">
+                        {/* Header */}
+                        <div className="token-header">
+                            <div className="network-indicator">
+                                <i className="fas fa-network-wired me-2"></i>
+                                {network}
+                            </div>
+                            <div className="token-logo">
+                                <i className="fas fa-coins"></i>
+                            </div>
+                            <h1 className="text-white display-4 fw-bold mb-3 animate__animated animate__fadeIn">
+                                DemoUSDT Dashboard
+                            </h1>
+                            <p className="text-white-50 mb-4">
+                                Manage your dUSDT tokens on the Sepolia Testnet
+                            </p>
+                            
+                            {!isConnected ? (
+                                <button 
+                                    className="btn-gradient btn-lg"
+                                    onClick={connectWallet}
+                                    disabled={isLoading}
+                                >
+                                    {isLoading ? (
+                                        <>
+                                            <span className="spinner-border spinner-border-sm me-2"></span>
+                                            Connecting...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <i className="fas fa-wallet me-2"></i>
+                                            Connect MetaMask
+                                        </>
+                                    )}
+                                </button>
+                            ) : (
+                                <div className="d-flex justify-content-center align-items-center gap-3">
+                                    <div 
+                                        className="wallet-address"
+                                        onClick={() => copyToClipboard(account)}
+                                        title="Click to copy"
+                                    >
+                                        <i className="fas fa-user-circle me-2"></i>
+                                        {formatAddress(account)}
+                                    </div>
+                                    <button 
+                                        className="btn-outline-gradient"
+                                        onClick={disconnectWallet}
+                                    >
+                                        <i className="fas fa-sign-out-alt me-2"></i>
+                                        Disconnect
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Main Content */}
+                        {isConnected && (
+                            <div className="row justify-content-center">
+                                <div className="col-lg-10">
+                                    {/* Balance Card */}
+                                    <div className="balance-card animate__animated animate__fadeInUp">
+                                        <div className="row align-items-center">
+                                            <div className="col-md-8">
+                                                <h6 className="opacity-75 mb-2">TOTAL BALANCE</h6>
+                                                <h1 className="display-4 fw-bold mb-3">
+                                                    {parseFloat(balance).toLocaleString('en-US', {
+                                                        minimumFractionDigits: 2,
+                                                        maximumFractionDigits: 6
+                                                    })} {tokenInfo.symbol}
+                                                </h1>
+                                                <p className="mb-0 opacity-75">
+                                                    <i className="fas fa-wallet me-2"></i>
+                                                    Demo USDT (dUSDT)
+                                                </p>
+                                            </div>
+                                            <div className="col-md-4 text-end">
+                                                <div className="d-flex flex-column gap-3">
+                                                    <button 
+                                                        className="btn-gradient"
+                                                        onClick={() => setShowTransferModal(true)}
+                                                    >
+                                                        <i className="fas fa-paper-plane me-2"></i>
+                                                        Send
+                                                    </button>
+                                                    <button 
+                                                        className="btn-outline-gradient"
+                                                        onClick={() => setShowApproveModal(true)}
+                                                    >
+                                                        <i className="fas fa-handshake me-2"></i>
+                                                        Approve
+                                                    </button>
+                                                    {account === "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266" && (
+                                                        <button 
+                                                            className="btn-outline-gradient"
+                                                            onClick={() => setShowMintModal(true)}
+                                                        >
+                                                            <i className="fas fa-plus-circle me-2"></i>
+                                                            Mint Tokens
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Stats Cards */}
+                                    <div className="row mb-4 animate__animated animate__fadeInUp" style={{ animationDelay: '0.1s' }}>
+                                        <div className="col-md-6 mb-3">
+                                            <div className="stat-card">
+                                                <h6 className="text-muted mb-2">
+                                                    <i className="fas fa-chart-line me-2"></i>
+                                                    TOTAL SUPPLY
+                                                </h6>
+                                                <h3 className="fw-bold">
+                                                    {tokenInfo.totalSupply ? 
+                                                        parseFloat(tokenInfo.totalSupply).toLocaleString('en-US', {
+                                                            minimumFractionDigits: 2,
+                                                            maximumFractionDigits: 2
+                                                        }) : "0"} {tokenInfo.symbol}
+                                                </h3>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6 mb-3">
+                                            <div className="stat-card">
+                                                <h6 className="text-muted mb-2">
+                                                   
